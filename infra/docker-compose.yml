@@ -1,0 +1,51 @@
+# evoserver infra-as-code (demo copy). The lab stubs render THIS file:
+# change it and the stubs change behaviour. The agent opens PRs against it.
+services:
+  nginx:
+    image: nginx:1.18.0
+    container_name: proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/evoserver.conf:/etc/nginx/conf.d/evoserver.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:9.1.0
+    container_name: grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SERVER_ROOT_URL=https://grafana.evoserver.lan
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana:/usr/share/grafana/public/custom:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+  redis:
+    image: redis:6.2.14
+    container_name: redis
+    command: redis-server --save 60 1
+    ports:
+      - "0.0.0.0:6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  jellyfin:
+    image: jellyfin/jellyfin:10.9.11
+    container_name: jellyfin
+    ports:
+      - "192.168.1.10:8096:8096"
+    volumes:
+      - /srv/media:/media:ro
+    restart: unless-stopped
+
+volumes:
+  grafana-data:
+  redis-data:

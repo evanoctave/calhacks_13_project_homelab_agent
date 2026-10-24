@@ -1,0 +1,27 @@
+[project]
+name = "portcullis"
+version = "0.1.0"
+description = "Read-only night-shift security reviewer for owner-signed infrastructure"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = [".venv", "out"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+warn_unreachable = true
+exclude = ["\\.venv", "out"]
+
+[[tool.mypy.overrides]]
+module = ["droid_sdk", "droid_sdk.*", "moss", "moss.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

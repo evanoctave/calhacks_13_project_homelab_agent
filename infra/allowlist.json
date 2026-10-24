@@ -1,0 +1,18 @@
+{
+  "owner": "Evan Barreau (evanoctave)",
+  "signed_at": "2026-10-24",
+  "statement": "I own these hosts. Scan read-only. One documented-default login attempt max. Never exploit. Fixes only as PRs.",
+  "prod_host": "192.168.1.10",
+  "lan_cidrs": ["192.168.1.0/24", "100.64.0.0/10"],
+  "internal_domains": [".evoserver.lan"],
+  "stranger_host": "not-mine.example.com",
+  "targets": [
+    {"id": "proxy",     "host": "127.0.0.1", "port": 18081, "svc": "nginx",    "prod_port": 80,   "role": "proxy",     "vhost": "grafana.evoserver.lan"},
+    {"id": "proxy-tls", "host": "127.0.0.1", "port": 18443, "svc": "nginx",    "prod_port": 443,  "role": "proxy-tls", "vhost": "grafana.evoserver.lan"},
+    {"id": "grafana",   "host": "127.0.0.1", "port": 18080, "svc": "grafana",  "prod_port": 3000, "role": "web"},
+    {"id": "redis",     "host": "127.0.0.1", "port": 16379, "svc": "redis",    "prod_port": 6379, "role": "redis"},
+    {"id": "nas-ssh",   "host": "127.0.0.1", "port": 18022, "svc": "nas",      "prod_port": 22,   "role": "ssh"},
+    {"id": "jellyfin",  "host": "127.0.0.1", "port": 18096, "svc": "jellyfin", "prod_port": 8096, "role": "web"}
+  ],
+  "hmac": ""
+}

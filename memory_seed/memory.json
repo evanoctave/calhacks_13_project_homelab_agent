@@ -1,0 +1,18 @@
+[
+ {"id": "risk-ssh-nas-22", "kind": "accepted_risk", "fingerprint": "SSH_EXPOSED@nas:22", "date": "2026-03-02", "by": "evan",
+  "text": "ACCEPTED RISK: sshd on the NAS (port 22, forwarded through evoserver) reachable from the internet. Reason: PasswordAuthentication no (key-only), fail2ban active with 3 retries / 1h ban, needed for the off-site backup pull from dad's office. Review again if keys change or fail2ban is removed."},
+ {"id": "chg-nginx-2026-10-09", "kind": "config_change", "path": "nginx/evoserver.conf", "date": "2026-10-09", "by": "evan",
+  "text": "CONFIG CHANGE nginx/evoserver.conf 2026-10-09, commit 'make every subdomain work after the Cloudflare tunnel change'. The grafana vhost header was replaced and the sink server was deleted:\n-    listen 443 ssl;\n-    server_name grafana.evoserver.lan *.evoserver.lan;\n-    allow 192.168.1.0/24;\n-    allow 100.64.0.0/10;\n-    deny all;\n+    listen 443 ssl default_server;\n+    server_name _;\n-server {\n-    listen 80 default_server;\n-    listen 443 ssl default_server;\n-    server_name _;\n-    return 444;\n-}\nThis vhost proxies to grafana:3000."},
+ {"id": "scan-2026-09-14", "kind": "scan_snapshot", "date": "2026-09-14",
+  "text": "SCAN 2026-09-14 open ports: port 22 (wan, accepted), port 80 (wan, proxy), port 443 (wan, proxy), port 3000 grafana (lan: bound 127.0.0.1, proxied for *.evoserver.lan behind a LAN allow-list), port 6379 redis (local only), port 8096 jellyfin (lan only 192.168.1.0/24). No P1 findings."},
+ {"id": "scan-2026-10-02", "kind": "scan_snapshot", "date": "2026-10-02",
+  "text": "SCAN 2026-10-02: port 6379 redis first seen published on 0.0.0.0 with ufw allow 6379/tcp, comment 'opened for redis-cli debugging'. Was local-only on 2026-09-14. Finding raised as P1, not fixed yet."},
+ {"id": "decision-jellyfin-8096", "kind": "decision", "fingerprint": "OPEN_PORT@jellyfin:8096", "date": "2026-07-20", "by": "evan",
+  "text": "DECISION: jellyfin port 8096 is published on 192.168.1.10, ufw allows it only from 192.168.1.0/24, and the jellyfin vhost has a LAN allow-list. Reviewed, LAN-only, ranked P4, no action. Remote viewing goes over Tailscale."},
+ {"id": "log-fail2ban-2026-10-14", "kind": "log_excerpt", "date": "2026-10-14", "source": "/var/log/fail2ban.log",
+  "text": "LOG fail2ban 2026-10-14 03:12:41 [sshd] Ban 185.220.101.47 ; 2026-10-14 03:40:09 [sshd] Ban 45.148.10.77 ; 2026-10-14 07:02:55 [sshd] Unban 185.220.101.47. 14 bans in the last 7 days, 0 successful logins from unknown keys."},
+ {"id": "log-auth-2026-10-15", "kind": "log_excerpt", "date": "2026-10-15", "source": "/var/log/auth.log",
+  "text": "LOG auth.log 2026-10-15 22:11:03 sshd[2213]: Accepted publickey for evan from 100.101.5.20 port 51322 ssh2: ED25519 SHA256:k9Q...; sshd_config: PasswordAuthentication no, PermitRootLogin no."},
+ {"id": "log-nginx-2026-10-15", "kind": "log_excerpt", "date": "2026-10-15", "source": "proxy access.log",
+  "text": "LOG nginx access 2026-10-15: 212 requests from 8 non-LAN IPs reached /login on grafana via Host headers like madibarreau.com and the raw IP; 2 of them POSTed /login. Before 2026-10-09 all requests to /login came from 192.168.1.0/24."}
+]
